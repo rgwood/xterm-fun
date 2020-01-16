@@ -1,26 +1,49 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import '../node_modules/xterm/css/xterm.css';
+import { Terminal } from 'xterm';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+export default class App extends React.Component {
+  term;
+  constructor() {
+    super();
+  }
+  componentDidMount() {
+    this.term = new Terminal({cursorBlink: true});
+    this.term.open(document.getElementById("terminal"));
+    this.term.write("Hello xterm!");
+    this.term.onKey(key => {
+      const char = key.domEvent.key;
+      if (char === "Enter") {
+        this.prompt();
+      } else if (char === "Backspace") {
+        this.term.write("\b \b");
+      } else {
+        this.term.write(char);
+      }
+    });
+    this.prompt();
+  }
+
+  prompt = () => {
+    var shellprompt = "$ ";
+    this.term.write("\r\n" + shellprompt);
+  };
+
+
+  render() {
+    return (
+      <div className="App">
+        <header className="App-header">
+          <p>
+            xterm.js tests
+          </p>
+          <div id="terminal" ></div>
+        </header>
+      </div>
+    );
+  }
 }
 
-export default App;
+
